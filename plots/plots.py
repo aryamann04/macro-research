@@ -1,6 +1,23 @@
 import pandas as pd 
 import matplotlib.pyplot as plt
 
+# 10yr yield, 10 yr real interest rate
+
+wrds_fed_yield_data = pd.read_csv('/Users/aryaman/macro-research/data/treasuryyields.csv', index_col=0, parse_dates=True)
+
+plt.figure(figsize=(10,5))
+wrds_fed_yield_data['fii10'].plot(label='fii10', color='blue')
+wrds_fed_yield_data['gs10'].plot(label='gs10', color='green')
+wrds_fed_yield_data['reaintratrearat10y'].plot(label='real 10yr rate', color='red')
+plt.title('wrds yield and real rate data')
+plt.xlabel('date')
+plt.ylabel('rate (%)')
+plt.legend() 
+plt.tight_layout()
+plt.show()
+
+# Exchange Rates 
+
 fxrates = pd.read_csv('/Users/aryaman/macro-research/data/fxrates.csv', index_col=0, parse_dates=True)
 
 plt.figure(figsize=(10, 5))
