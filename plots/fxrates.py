@@ -1,9 +1,9 @@
 import pandas as pd 
 import matplotlib.pyplot as plt
 
-# load data, truncate data to start from 1990-01-01
+# load data, truncate data to start from 1991-01-01
 
-cutoff_date = '1990-01-01'
+cutoff_date = '1991-01-01'
 
 fxrates = pd.read_csv('/Users/aryaman/macro-research/data/fxrates.csv', index_col=0, parse_dates=True)
 fxrates = fxrates.truncate(before=cutoff_date)

@@ -3,6 +3,11 @@ import matplotlib.pyplot as plt
 
 from loader import inflation, yields 
 
+# truncate to start from cutoff date '1991-01-01'
+cutoff_date = '1991-01-01'
+inflation = inflation.truncate(before=cutoff_date)
+yields = yields.truncate(before=cutoff_date)
+
 # join inflation and yields, calculate real rates
 
 inflation_and_yields = inflation.join(yields, how='left').dropna()
