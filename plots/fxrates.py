@@ -14,6 +14,10 @@ fxrates['USD/EUR'] = usd_eur['CCUSMA02EZM618N']
 fxrates['USD/GBP'] = usd_gbp['CCUSMA02GBM618N']
 fxrates['USD/YUAN'] = usd_yuan['CCUSMA02CNM618N']
 
+# by convention, eur/usd and gbp/usd are quoted per unit usd 
+fxrates['EUR/USD'] = 1 / fxrates['USD/EUR']
+fxrates['GBP/USD'] = 1 / fxrates['USD/GBP']
+
 print(fxrates.head(10))
 
 # plots 
@@ -56,6 +60,26 @@ plt.ylabel('yen per USD')
 plt.legend()
 plt.tight_layout()
 plt.savefig('/Users/aryaman/macro-research/plots/figures/usd-yen.png')
+plt.show()
+
+plt.figure(figsize=(10, 5))
+fxrates['EUR/USD'].dropna().plot(label='EUR/USD', color='orange')
+plt.title('EUR/USD')
+plt.xlabel('date')
+plt.ylabel('USD per euro')
+plt.legend()
+plt.tight_layout()
+plt.savefig('/Users/aryaman/macro-research/plots/figures/eur-usd.png')
+plt.show()
+
+plt.figure(figsize=(10, 5))
+fxrates['GBP/USD'].dropna().plot(label='GBP/USD', color='orange')
+plt.title('GBP/USD')
+plt.xlabel('date')
+plt.ylabel('USD per pound sterling')
+plt.legend()
+plt.tight_layout()
+plt.savefig('/Users/aryaman/macro-research/plots/figures/gbp-usd.png')
 plt.show()
 
 
