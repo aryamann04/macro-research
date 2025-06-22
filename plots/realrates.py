@@ -1,39 +1,73 @@
 import pandas as pd
 import matplotlib.pyplot as plt 
 
-# load data, rename columns for convenience 
+from loader import inflation, yields 
 
-inflation = (
-    pd.read_csv('/Users/aryaman/macro-research/data/lseg_inflation.csv', parse_dates=['PeriodDate'])
-      .pivot_table(index='PeriodDate', columns='EcoSeriesID', values='Series_Value')
-      .sort_index()
-)
+# join inflation and yields, calculate real rates
 
-inflation = inflation.rename(columns={
-    135494: 'pce_index',
-    156602: 'corecpi_index',
-    202641: 'cpi' # already given as year-on-year percentage change 
-})
+inflation_and_yields = inflation.join(yields, how='left').dropna()
 
-yields = (
-    pd.read_csv('/Users/aryaman/macro-research/data/lseg_yields.csv', parse_dates=['PeriodDate'])
-      .pivot_table(index='PeriodDate', columns='EcoSeriesID', values='Series_Value')
-      .sort_index()
-)
+realrates = pd.DataFrame()
+realrates['10yr_nominal'] = inflation_and_yields['10yr_yield']
 
-yields = yields.rename(columns={200398: 'nominal10yr_yield'})
+realrates['10yr_real_pce'] = inflation_and_yields['10yr_yield'] - inflation_and_yields['pce']
+realrates['10yr_real_corecpi'] = inflation_and_yields['10yr_yield'] - inflation_and_yields['corecpi']
+realrates['10yr_real_cpi'] = inflation_and_yields['10yr_yield'] - inflation_and_yields['cpi']
+realrates['10yr_real_corepce'] = inflation_and_yields['10yr_yield'] - inflation_and_yields['corepce']
+realrates['10yr_real_cpi_urban'] = inflation_and_yields['10yr_yield'] - inflation_and_yields['cpi_urban']
 
-# calculate year on year inflation values (pct change from 1 year ago) and isolate relevant rates
+# real rate plot (all 5 series)
 
-inflation['pce'] = inflation['pce_index'].pct_change(periods=12) * 100
-inflation['corecpi'] = inflation['corecpi_index'].pct_change(periods=12) * 100
-inflation = inflation[['pce', 'corecpi', 'cpi']]
+plt.figure(figsize=(10,5))
 
-# resample yields to monthly (take value on the 10th of the month) 
+realrates['10yr_nominal'].plot(label='10yr nominal rate', color='black')
 
-yields = yields.resample('M').last()
+realrates['10yr_real_pce'].plot(label='10yr real rate with PCE', color='red')
+realrates['10yr_real_corecpi'].plot(label='10yr real rate with core CPI', color='blue')
+realrates['10yr_real_cpi'].plot(label='10yr real rate with CPI', color='green')
+realrates['10yr_real_corepce'].plot(label='10yr real rate with core PCE', color='orange')
+realrates['10yr_real_cpi_urban'].plot(label='10yr real rate with CPI urban', color='yellow')
 
-# print(inflation.head(20))
-print(yields.head(20))
+plt.title('10yr real rates (with core PCE and urban CPI)')
+plt.xlabel('date')
+plt.ylabel('real rate (%)')
+plt.legend()
+plt.tight_layout()
+plt.savefig('/Users/aryaman/macro-research/plots/figures/10yr_real_rates_full.png')
+plt.show()
 
-# plt.figure(figsize=(10,5))
+# real rate plot (only CPI, core CPI, PCE)
+
+plt.figure(figsize=(10,5))
+
+realrates['10yr_nominal'].plot(label='10yr nominal rate', color='black')
+
+realrates['10yr_real_pce'].plot(label='10yr real rate with PCE', color='red')
+realrates['10yr_real_corecpi'].plot(label='10yr real rate with core CPI', color='blue')
+realrates['10yr_real_cpi'].plot(label='10yr real rate with CPI', color='green')
+
+plt.title('10yr real rates')
+plt.xlabel('date')
+plt.ylabel('real rate (%)')
+plt.legend()
+plt.tight_layout()
+plt.savefig('/Users/aryaman/macro-research/plots/figures/10yr_real_rates.png')
+plt.show()
+
+# inflation only plot 
+
+plt.figure(figsize=(10,5))
+
+inflation['pce'].plot(label='PCE', color='red')
+inflation['corecpi'].plot(label='core CPI', color='blue')
+inflation['cpi'].plot(label='CPI (LSEG)', color='green')
+inflation['corepce'].plot(label='core PCE', color='orange')
+inflation['cpi_urban'].plot(label='CPI', color='yellow')
+
+plt.title('inflation rates')
+plt.xlabel('date')
+plt.ylabel('inflation rate (%)')
+plt.legend()
+plt.tight_layout()
+plt.savefig('/Users/aryaman/macro-research/plots/figures/inflation_rates.png')
+plt.show()
