@@ -39,7 +39,7 @@ plt.ylabel('real rate (%)')
 plt.legend()
 plt.tight_layout()
 plt.savefig('/Users/aryaman/macro-research/plots/figures/10yr_real_rates_full.png')
-plt.show()
+# plt.show()
 
 # real rate plot (only CPI, core CPI, PCE)
 
@@ -57,7 +57,7 @@ plt.ylabel('real rate (%)')
 plt.legend()
 plt.tight_layout()
 plt.savefig('/Users/aryaman/macro-research/plots/figures/10yr_real_rates.png')
-plt.show()
+# plt.show()
 
 # inflation only plot 
 
@@ -75,4 +75,4 @@ plt.ylabel('inflation rate (%)')
 plt.legend()
 plt.tight_layout()
 plt.savefig('/Users/aryaman/macro-research/plots/figures/inflation_rates.png')
-plt.show()
+# plt.show()
