@@ -127,4 +127,3 @@ china_data = pd.DataFrame()
 china_data.index = china_inflation.index
 china_data['cpi'] = china_inflation
 china_data['10yr_yield'] = china_yields
-print(china_data.head())
