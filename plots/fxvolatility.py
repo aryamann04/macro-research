@@ -19,7 +19,6 @@ spots = np.log(spots).diff().dropna()
 # vol by year 
 fxvol_by_year = spots.groupby(spots.index.year).std().mul(np.sqrt(252))
 fxvol_by_year.index = pd.to_datetime(fxvol_by_year.index.astype(str) + '-12-31')
-print(fxvol_by_year)
 plt.figure(figsize=(10, 5))
 fxvol_by_year['EUR/USD'].plot(marker='o', label='EUR/USD', color='blue')
 fxvol_by_year['GBP/USD'].plot(marker='o', label='GBP/USD', color='green')
