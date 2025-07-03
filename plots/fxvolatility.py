@@ -13,8 +13,7 @@ spots['GBP/USD'] = gbp_spot['DEXUSUK']
 spots['USD/YEN'] = yen_spot['DEXJPUS']
 spots['USD/YUAN'] = yuan_spot['DEXCHUS']
 
-spots = spots.pct_change().dropna()
-# spots = np.log(spots).diff().dropna()
+spots = np.log(spots).diff().dropna()
 # vol by year 
 
 fxvol_by_year = spots.groupby(spots.index.year).std().mul(np.sqrt(252)).mul(100)
@@ -31,7 +30,7 @@ plt.ylabel('annualized volatility (%)')
 plt.title(f'fx volatility by year')
 plt.legend()
 plt.tight_layout()
-# plt.savefig('/Users/aryaman/macro-research/plots/figures/fxvolatility-by-year-pctchange.png')
+# plt.savefig('/Users/aryaman/macro-research/plots/figures/fxvolatility-by-year.png')
 
 # vol by month 
 
@@ -53,5 +52,5 @@ plt.ylabel('annualized volatility (%)')
 plt.title(f'fx volatility by month')
 plt.legend()
 plt.tight_layout()
-# plt.savefig('/Users/aryaman/macro-research/plots/figures/fxvolatility-by-month-pctchange-full.png')
+# plt.savefig('/Users/aryaman/macro-research/plots/figures/fxvolatility-by-month-full.png')
 
