@@ -19,7 +19,7 @@ spots = np.log(spots).diff().dropna()
 # vol by year 
 fxvol_by_year = spots.groupby(spots.index.year).std().mul(np.sqrt(252))
 fxvol_by_year.index = pd.to_datetime(fxvol_by_year.index.astype(str) + '-12-31')
-
+print(fxvol_by_year)
 plt.figure(figsize=(10, 5))
 fxvol_by_year['EUR/USD'].plot(marker='o', label='EUR/USD', color='blue')
 fxvol_by_year['GBP/USD'].plot(marker='o', label='GBP/USD', color='green')
@@ -87,18 +87,18 @@ plt.savefig('/Users/aryaman/macro-research/plots/figures/aggregate-fxvolatility-
 
 plt.figure(figsize=(10, 5))
 
-rolling_vol = spots.mean(axis=1)
+rolling_vol = pd.DataFrame(index=spots.index)
 
-windows = [20, 50, 250]
-for w in windows: 
-    rolling_vol[f'{w}'] = spots.rolling(window=w).std().mul(np.sqrt(252))
+windows = [50, 100, 250]
+for w in windows:
+    rolling_vol[f'{w}'] = spots.rolling(window=w).std().mean(axis=1).mul(np.sqrt(252))
 rolling_vol = rolling_vol.dropna()
 
-rolling_vol['20'].plot(color='blue', label='20-day rolling volatility')
-rolling_vol['50'].plot(color='green', label='50-day rolling volatility')
+rolling_vol['50'].plot(color='blue', label='50-day rolling volatility')
+rolling_vol['100'].plot(color='green', label='100-day rolling volatility')
 rolling_vol['250'].plot(color='red', label='250-day rolling volatility')
 
-plt.title('rolling annualized fx volatility (across 4 currency pairs)')
+plt.title('rolling annualized fx volatility (average across 4 currency pairs)')
 plt.ylabel('annualized volatility')
 plt.xlabel('date')
 plt.axvline(pd.to_datetime('2025-01-01'), color='black', linestyle='--', linewidth=1)
@@ -108,7 +108,3 @@ plt.legend()
 plt.grid(True, linestyle='--', alpha=0.5)
 plt.tight_layout()
 plt.savefig('/Users/aryaman/macro-research/plots/figures/aggregate-fxvolatility-rolling.png')
-
-
-
-
