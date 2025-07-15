@@ -84,13 +84,13 @@ plt.figure(figsize=(10,5))
 fred_real_rate = pd.read_csv('/Users/aryaman/macro-research/data/fred_real_rate.csv', index_col=0, parse_dates=True)
 realrates['fred_10yr_real_rate'] = fred_real_rate['REAINTRATREARAT10Y']
 
-realrates['fred_10yr_real_rate'].plot(label='FRED Model 10yr real rate', color='black')
+realrates['fred_10yr_real_rate'].plot(label='FRED model 10yr real rate', color='black')
 
 realrates['10yr_real_pce'].plot(label='10yr real rate with PCE', color='red')
 realrates['10yr_real_corecpi'].plot(label='10yr real rate with core CPI', color='blue')
 realrates['10yr_real_cpi'].plot(label='10yr real rate with CPI', color='green')
 
-plt.title('10yr real rates')
+plt.title('10yr real rates - comparison with FRED model')
 plt.xlabel('date')
 plt.ylabel('real rate (%)')
 plt.legend()

@@ -2,16 +2,23 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-euro_spot = pd.read_csv('/Users/aryaman/macro-research/data/eur-spot-daily.csv', index_col=0, parse_dates=True)
-gbp_spot = pd.read_csv('/Users/aryaman/macro-research/data/gbp-spot-daily.csv', index_col=0, parse_dates=True)
-yen_spot = pd.read_csv('/Users/aryaman/macro-research/data/yen-spot-daily.csv', index_col=0, parse_dates=True)
-yuan_spot = pd.read_csv('/Users/aryaman/macro-research/data/yuan-spot-daily.csv', index_col=0, parse_dates=True)
+from fredconnect import fred
 
-spots = pd.DataFrame()
-spots['EUR/USD'] = euro_spot['DEXUSEU']
-spots['GBP/USD'] = gbp_spot['DEXUSUK']
-spots['USD/YEN'] = yen_spot['DEXJPUS']
-spots['USD/YUAN'] = yuan_spot['DEXCHUS']
+# connect via FRED API
+series = ['DEXUSEU', 'DEXUSUK', 'DEXJPUS', 'DEXCHUS']
+spot_data = {sid: fred.get_series(sid) for sid in series}
+spots = pd.DataFrame(spot_data)
+
+spots = spots.rename(columns={
+    'DEXUSEU': 'EUR/USD',
+    'DEXUSUK': 'GBP/USD',
+    'DEXJPUS': 'USD/YEN',
+    'DEXCHUS': 'USD/YUAN'
+})
+
+spots.index = pd.to_datetime(spots.index)
+spots.dropna(inplace=True)
+spots = spots.truncate(before='2007-01-01')
 
 # log returns 
 spots = np.log(spots).diff().dropna()
