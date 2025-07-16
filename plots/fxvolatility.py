@@ -1,7 +1,7 @@
 import pandas as pd 
 import matplotlib.pyplot as plt
 import numpy as np
-
+from scipy.stats import levene, fligner 
 from fredconnect import fred
 
 # connect via FRED API
@@ -23,7 +23,62 @@ spots = spots.truncate(before='2007-01-01')
 # log returns 
 spots = np.log(spots).diff().dropna()
 
-# vol by year 
+spots_2024 = spots[spots.index.year == 2024]
+spots_2025 = spots[spots.index.year == 2025]
+
+# calculate observed vol for 2025 using all data pts 
+vol_2025 = spots_2025.std() * np.sqrt(252)
+
+n = len(spots_2024)
+B = 1000
+boot_vols = [] 
+
+for i in range(B): 
+    sample = spots_2024.sample(n=n, replace=False)
+    boot_vol = sample.std() * np.sqrt(252)
+    boot_vols.append(boot_vol)
+
+boot_vols = pd.DataFrame(boot_vols)
+boot_mean = boot_vols.mean()
+
+# hypothesis testing via bootstrapping
+p_vals = {}
+for c in spots.columns: 
+    obs = vol_2025[c]
+    mu = boot_mean[c]
+    p_vals[c] = np.mean(np.abs(boot_vols[c] - mu) >= np.abs(obs - mu))
+
+test1 = pd.DataFrame({
+    '2025_vol': vol_2025,
+    '2024_boot_vol_mean': boot_mean,
+    'p_value': p_vals
+})
+
+pd.set_option('display.float_format', '{:.6}'.format)
+print(test1)
+
+# levene & fligner tests -- robust to departure from normality 
+
+results = []
+for c in spots.columns:
+    r24 = spots_2024[c].values
+    r25 = spots_2025[c].values
+
+    W, p_l = levene(r24, r25, center='median')
+    F, p_f = fligner(r24, r25)
+
+    results.append({
+        'pair': c,
+        'levene_p_val': p_l,
+        'fligner_p_val': p_f
+    })
+
+test2 = pd.DataFrame(results).set_index('pair')
+print(test2)
+
+'''
+# vol by year - whole sample
+
 fxvol_by_year = spots.groupby(spots.index.year).std().mul(np.sqrt(252))
 fxvol_by_year.index = pd.to_datetime(fxvol_by_year.index.astype(str) + '-12-31')
 plt.figure(figsize=(10, 5))
@@ -114,3 +169,4 @@ plt.legend()
 plt.grid(True, linestyle='--', alpha=0.5)
 plt.tight_layout()
 plt.savefig('/Users/aryaman/macro-research/plots/figures/aggregate-fxvolatility-rolling.png')
+'''
