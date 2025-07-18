@@ -219,11 +219,14 @@ plt.savefig('/Users/aryaman/macro-research/plots/figures/aggregate-fxvolatility-
 # aggregate volatility monthly with average
 
 plt.figure(figsize=(10, 5))
-agg_monthly_vol.plot(label='average annualized volatility', color='black', linewidth='2')
-fxvol_by_month['EUR/USD'].plot(label='EUR/USD', color='blue', linestyle='--', linewidth='1')
-fxvol_by_month['GBP/USD'].plot(label='GBP/USD', color='green', linestyle='--', linewidth='1')
-fxvol_by_month['USD/YEN'].plot(label='USD/YEN', color='red', linestyle='--', linewidth='1')
-fxvol_by_month['USD/YUAN'].plot(label='USD/YUAN', color='orange', linestyle='--', linewidth='1')
+
+x = agg_monthly_vol.index
+plt.plot(x, agg_monthly_vol.values, label='average annualized volatility', color='black', linewidth=2)
+plt.plot(x, fxvol_by_month.loc[x, 'EUR/USD'].values, label='EUR/USD', color='blue', linestyle='--', linewidth=1)
+plt.plot(x, fxvol_by_month.loc[x, 'GBP/USD'].values, label='GBP/USD', color='green', linestyle='--', linewidth=1)
+plt.plot(x, fxvol_by_month.loc[x, 'USD/YEN'].values, label='USD/YEN', color='red', linestyle='--', linewidth=1)
+plt.plot(x, fxvol_by_month.loc[x, 'USD/YUAN'].values, label='USD/YUAN', color='orange', linestyle='--', linewidth=1)
+
 
 plt.title('monthly volatility')
 plt.ylabel('annualized volatility')
