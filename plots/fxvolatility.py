@@ -1,7 +1,8 @@
 import pandas as pd 
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import numpy as np
-from scipy.stats import f, norm, skew, kurtosis, probplot, levene, fligner
+from scipy.stats import norm, skew, kurtosis, probplot, levene, fligner
 from fredconnect import fred
 
 # connect via FRED API
@@ -30,6 +31,7 @@ spots_2025 = spots[spots.index.year == 2025]
 vol_2025 = spots_2025.std() * np.sqrt(252)
 
 n = len(spots_2025)
+print(n)
 B = 10000
 boot_vols = {c: [] for c in spots.columns}
 
@@ -49,7 +51,7 @@ for c in spots.columns:
     plt.title(f'{c} bootstrapped volatilities (2024)')
     plt.xlabel('annualized volatility')
     plt.ylabel('frequency')
-    plt.savefig(f'/Users/aryaman/macro-research/plots/figures/fxvoltests/{c.replace("/", "_")}-bootstrapped-vols.png')
+    # plt.savefig(f'/Users/aryaman/macro-research/plots/figures/fxvoltests/{c.replace("/", "_")}-bootstrapped-vols.png')
     # plt.show()
 
 # hypothesis testing via bootstrapping
@@ -63,25 +65,12 @@ test1 = pd.DataFrame({
     '2025_vol': vol_2025,
     '2024_boot_vol_mean': boot_mean,
     'diff': vol_2025 - boot_mean,
+    'pct change' : (vol_2025 - boot_mean) / boot_mean * 100,
     'p_value': p_vals
 })
 
 pd.set_option('display.float_format', '{:0.6}'.format)
 print(test1)
-print()
-
-# F test
-results = []
-for c in spots.columns:
-    var25 = spots_2025[c].var()
-    var24 = spots_2024[c].var()
-    df1, df2 = len(spots_2025)-1, len(spots_2024)-1
-    F_stat = var25 / var24
-    p = 2 * min(f.cdf(F_stat, df1, df2), 1 - f.cdf(F_stat, df1, df2))
-    results.append((c, F_stat, p))
-
-ftable = pd.DataFrame(results, columns=['Pair','F_statistic','p_value'])
-print(ftable.to_string(index=False, float_format='%.6f'))
 print()
 
 # normality checks
@@ -104,12 +93,12 @@ for c in spots.columns:
     axes[1].set_title(f'{c} Q–Q Plot')
 
     plt.tight_layout()
-    plt.savefig(f'/Users/aryaman/macro-research/plots/figures/fxvoltests/normality-checks/{c.replace("/", "_")}.png')
-    plt.show()
+    # plt.savefig(f'/Users/aryaman/macro-research/plots/figures/fxvoltests/normality-checks/{c.replace("/", "_")}.png')
+    # plt.show()
 
     sk = skew(data)
     kt = kurtosis(data, fisher=False) 
-    print(f'{c} - skewness: {sk:.4f}, kurtosis: {kt:.4f}')
+    # print(f'{c} - skewness: {sk:.4f}, kurtosis: {kt:.4f}')
 
 # levene & fligner tests -- robust to departure from normality 
 
@@ -128,13 +117,15 @@ for c in spots.columns:
     })
 
 test2 = pd.DataFrame(results).set_index('pair')
+print()
 print(test2)
-
-'''
-# vol by year - whole sample
 
 fxvol_by_year = spots.groupby(spots.index.year).std().mul(np.sqrt(252))
 fxvol_by_year.index = pd.to_datetime(fxvol_by_year.index.astype(str) + '-12-31')
+
+# vol by year - whole sample
+
+
 plt.figure(figsize=(10, 5))
 fxvol_by_year['EUR/USD'].plot(marker='o', label='EUR/USD', color='blue')
 fxvol_by_year['GBP/USD'].plot(marker='o', label='GBP/USD', color='green')
@@ -182,6 +173,7 @@ plt.grid(True, linestyle='--', alpha=0.5)
 plt.tight_layout()
 plt.savefig('/Users/aryaman/macro-research/plots/figures/aggregate-fxvolatility-by-year.png')
 
+
 # aggregate volatility - monthly 
 
 agg_monthly_vol = fxvol_by_month.mean(axis=1)
@@ -223,4 +215,39 @@ plt.legend()
 plt.grid(True, linestyle='--', alpha=0.5)
 plt.tight_layout()
 plt.savefig('/Users/aryaman/macro-research/plots/figures/aggregate-fxvolatility-rolling.png')
-'''
+
+# aggregate volatility monthly with average
+
+plt.figure(figsize=(10, 5))
+agg_monthly_vol.plot(label='average annualized volatility', color='black', linewidth='2')
+fxvol_by_month['EUR/USD'].plot(label='EUR/USD', color='blue', linestyle='--', linewidth='1')
+fxvol_by_month['GBP/USD'].plot(label='GBP/USD', color='green', linestyle='--', linewidth='1')
+fxvol_by_month['USD/YEN'].plot(label='USD/YEN', color='red', linestyle='--', linewidth='1')
+fxvol_by_month['USD/YUAN'].plot(label='USD/YUAN', color='orange', linestyle='--', linewidth='1')
+
+plt.title('monthly volatility')
+plt.ylabel('annualized volatility')
+plt.xlabel('date')
+
+ax = plt.gca()
+ax.xaxis.set_major_locator(mdates.MonthLocator(interval=6))
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+ax.tick_params(axis='x', labelsize=8)
+plt.xticks(rotation=45)
+
+highlight_ranges = [
+    ('2008-10', '2009-04'),
+    ('2016-04', '2016-10'),
+    ('2020-01', '2020-07'),
+    ('2022-10', '2023-04'),
+    ('2025-01', '2025-07')
+]
+
+for start, end in highlight_ranges:
+    plt.axvspan(pd.to_datetime(start), pd.to_datetime(end), color='gray', alpha=0.2)
+
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.tight_layout()
+plt.savefig('/Users/aryaman/macro-research/plots/figures/aggregate-monthly-with-avg.png')
+
