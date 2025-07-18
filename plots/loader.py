@@ -127,3 +127,38 @@ china_data = pd.DataFrame()
 china_data.index = china_inflation.index
 china_data['cpi'] = china_inflation
 china_data['10yr_yield'] = china_yields
+
+# FRED API for FX spots
+from fredconnect import fred 
+
+series = ['DEXUSEU', 'DEXUSUK', 'DEXJPUS', 'DEXCHUS']
+spot_data = {sid: fred.get_series(sid) for sid in series}
+spots = pd.DataFrame(spot_data)
+
+spots = spots.rename(columns={
+    'DEXUSEU': 'EUR/USD',
+    'DEXUSUK': 'GBP/USD',
+    'DEXJPUS': 'USD/YEN',
+    'DEXCHUS': 'USD/YUAN'
+})
+
+spots.index = pd.to_datetime(spots.index)
+spots.dropna(inplace=True)
+
+# for DXY spots 
+series = ['DEXUSEU', 'DEXJPUS', 'DEXUSUK', 'DEXCAUS', 'DEXSDUS', 'DEXSZUS']
+dxy_spots = {sid: fred.get_series(sid) for sid in series}
+dxy_spots = pd.DataFrame(dxy_spots)
+
+dxy_spots = dxy_spots.rename(columns={
+    'DEXUSEU': 'EUR/USD',
+    'DEXJPUS': 'USD/YEN',
+    'DEXUSUK': 'GBP/USD',
+    'DEXCAUS': 'USD/CAD',
+    'DEXSDUS': 'USD/SEK',
+    'DEXSZUS': 'USD/CHF'
+})
+
+dxy_spots.index = pd.to_datetime(dxy_spots.index)
+dxy_spots.dropna(inplace=True)
+

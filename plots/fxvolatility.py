@@ -3,22 +3,8 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import numpy as np
 from scipy.stats import norm, skew, kurtosis, probplot, levene, fligner
-from fredconnect import fred
+from loader import spots 
 
-# connect via FRED API
-series = ['DEXUSEU', 'DEXUSUK', 'DEXJPUS', 'DEXCHUS']
-spot_data = {sid: fred.get_series(sid) for sid in series}
-spots = pd.DataFrame(spot_data)
-
-spots = spots.rename(columns={
-    'DEXUSEU': 'EUR/USD',
-    'DEXUSUK': 'GBP/USD',
-    'DEXJPUS': 'USD/YEN',
-    'DEXCHUS': 'USD/YUAN'
-})
-
-spots.index = pd.to_datetime(spots.index)
-spots.dropna(inplace=True)
 spots = spots.truncate(before='2007-01-01')
 
 # log returns 
