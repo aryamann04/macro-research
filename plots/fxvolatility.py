@@ -29,12 +29,12 @@ spots_2025 = spots[spots.index.year == 2025]
 # calculate observed vol for 2025 using all data pts 
 vol_2025 = spots_2025.std() * np.sqrt(252)
 
-n = len(spots_2024)
-B = 1000
+n = len(spots_2025)
+B = 10000
 boot_vols = [] 
 
 for i in range(B): 
-    sample = spots_2024.sample(n=n, replace=False)
+    sample = spots_2024.sample(n=n, replace=True)
     boot_vol = sample.std() * np.sqrt(252)
     boot_vols.append(boot_vol)
 
@@ -51,6 +51,7 @@ for c in spots.columns:
 test1 = pd.DataFrame({
     '2025_vol': vol_2025,
     '2024_boot_vol_mean': boot_mean,
+    'diff': vol_2025 - boot_mean,
     'p_value': p_vals
 })
 
