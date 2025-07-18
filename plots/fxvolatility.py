@@ -236,7 +236,7 @@ ax = plt.gca()
 ax.xaxis.set_major_locator(mdates.MonthLocator(interval=6))
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
 ax.tick_params(axis='x', labelsize=8)
-plt.xticks(rotation=45)
+plt.xticks(rotation=45, ha='right')
 
 highlight_ranges = [
     ('2008-10', '2009-04'),
