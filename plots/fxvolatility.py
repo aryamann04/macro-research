@@ -1,7 +1,7 @@
 import pandas as pd 
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import f, levene, fligner 
+from scipy.stats import f, norm, skew, kurtosis, probplot, levene, fligner
 from fredconnect import fred
 
 # connect via FRED API
@@ -39,7 +39,6 @@ for i in range(B):
         boot_vols[c].append(sample[c].std() * np.sqrt(252))
 
 boot_vols = pd.DataFrame(boot_vols)
-print(boot_vols)
 boot_mean = boot_vols.mean()
 
 # plot histograms 
@@ -47,11 +46,11 @@ for c in spots.columns:
     plt.figure()
     plt.hist(boot_vols[c], bins=50, alpha=0.7, color='blue', label='bootstrapped volatilities (2024)')
     plt.axvline(vol_2025[c], color='black', linestyle='--', label='observed volatility (2025)')
-    plt.title(f'{c} bootstrapped volatilities')
+    plt.title(f'{c} bootstrapped volatilities (2024)')
     plt.xlabel('annualized volatility')
     plt.ylabel('frequency')
-    plt.savefig(f'/Users/aryaman/macro-research/plots/figures/{c.replace("/", "_")}-bootstrapped-vols.png')
-    plt.show()
+    plt.savefig(f'/Users/aryaman/macro-research/plots/figures/fxvoltests/{c.replace("/", "_")}-bootstrapped-vols.png')
+    # plt.show()
 
 # hypothesis testing via bootstrapping
 p_vals = {}
@@ -67,8 +66,9 @@ test1 = pd.DataFrame({
     'p_value': p_vals
 })
 
-pd.set_option('display.float_format', '{:.6}'.format)
+pd.set_option('display.float_format', '{:0.6}'.format)
 print(test1)
+print()
 
 # F test
 results = []
@@ -82,6 +82,34 @@ for c in spots.columns:
 
 ftable = pd.DataFrame(results, columns=['Pair','F_statistic','p_value'])
 print(ftable.to_string(index=False, float_format='%.6f'))
+print()
+
+# normality checks
+
+for c in spots.columns:
+    data = spots[c]
+    mu, sigma = data.mean(), data.std()
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+
+    # histogram vs normal pdf
+    axes[0].hist(data, bins=30, density=True, alpha=0.6)
+    x = np.linspace(data.min(), data.max(), 200)
+    axes[0].plot(x, norm.pdf(x, mu, sigma), linestyle='dashed')
+    axes[0].set_title(f'{c} histogram')
+    axes[0].set_xlabel('returns')
+    axes[0].set_ylabel('density')
+
+    # Q-Q
+    probplot(data, dist='norm', plot=axes[1])
+    axes[1].set_title(f'{c} Q–Q Plot')
+
+    plt.tight_layout()
+    plt.savefig(f'/Users/aryaman/macro-research/plots/figures/fxvoltests/normality-checks/{c.replace("/", "_")}.png')
+    plt.show()
+
+    sk = skew(data)
+    kt = kurtosis(data, fisher=False) 
+    print(f'{c} - skewness: {sk:.4f}, kurtosis: {kt:.4f}')
 
 # levene & fligner tests -- robust to departure from normality 
 
