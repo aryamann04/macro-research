@@ -1,7 +1,7 @@
 import pandas as pd 
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import levene, fligner 
+from scipy.stats import f, levene, fligner 
 from fredconnect import fred
 
 # connect via FRED API
@@ -31,15 +31,27 @@ vol_2025 = spots_2025.std() * np.sqrt(252)
 
 n = len(spots_2025)
 B = 10000
-boot_vols = [] 
+boot_vols = {c: [] for c in spots.columns}
 
 for i in range(B): 
     sample = spots_2024.sample(n=n, replace=True)
-    boot_vol = sample.std() * np.sqrt(252)
-    boot_vols.append(boot_vol)
+    for c in spots.columns:
+        boot_vols[c].append(sample[c].std() * np.sqrt(252))
 
 boot_vols = pd.DataFrame(boot_vols)
+print(boot_vols)
 boot_mean = boot_vols.mean()
+
+# plot histograms 
+for c in spots.columns: 
+    plt.figure()
+    plt.hist(boot_vols[c], bins=50, alpha=0.7, color='blue', label='bootstrapped volatilities (2024)')
+    plt.axvline(vol_2025[c], color='black', linestyle='--', label='observed volatility (2025)')
+    plt.title(f'{c} bootstrapped volatilities')
+    plt.xlabel('annualized volatility')
+    plt.ylabel('frequency')
+    plt.savefig(f'/Users/aryaman/macro-research/plots/figures/{c.replace("/", "_")}-bootstrapped-vols.png')
+    plt.show()
 
 # hypothesis testing via bootstrapping
 p_vals = {}
@@ -57,6 +69,19 @@ test1 = pd.DataFrame({
 
 pd.set_option('display.float_format', '{:.6}'.format)
 print(test1)
+
+# F test
+results = []
+for c in spots.columns:
+    var25 = spots_2025[c].var()
+    var24 = spots_2024[c].var()
+    df1, df2 = len(spots_2025)-1, len(spots_2024)-1
+    F_stat = var25 / var24
+    p = 2 * min(f.cdf(F_stat, df1, df2), 1 - f.cdf(F_stat, df1, df2))
+    results.append((c, F_stat, p))
+
+ftable = pd.DataFrame(results, columns=['Pair','F_statistic','p_value'])
+print(ftable.to_string(index=False, float_format='%.6f'))
 
 # levene & fligner tests -- robust to departure from normality 
 
