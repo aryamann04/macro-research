@@ -1,4 +1,4 @@
-import pandas as pd 
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -40,19 +40,33 @@ dxy_spots['DXY'] = c * (dxy_spots['EUR/USD'] ** weights['EUR/USD']) * \
 usdx = pd.concat([fed_nominal_broad_usd_idx, dxy['Close']], axis=1)
 usdx.columns = ['fed USD idx', 'DXY']
 usdx['manual DXY'] = dxy_spots['DXY']
-usdx.dropna(inplace=True)
+usdx.dropna(inplace=True) 
+
+usdx_ret = np.log(usdx).diff().fillna(0)
+usdx_norm = np.exp(usdx_ret.cumsum()) * 100
 
 # plot
 fig = plt.subplots(figsize=(10, 6))
-usdx['fed USD idx'].plot(color='blue', linestyle='--', label='fed USD index')
-usdx['DXY'].plot(color='black', label='DXY (yfinance)')
-usdx['manual DXY'].plot(color='red', linestyle='--', label='manually-computed DXY')
+usdx['fed USD idx'].plot(color='blue', label='fed USD index')
+usdx['DXY'].plot(color='black', label='DXY')
 plt.ylabel('USD index')
 plt.xlabel('date')
 plt.legend()
 plt.title('comparison of USD indices')
 plt.tight_layout()
-plt.savefig('/Users/aryaman/macro-research/plots/figures/usdx-comparison.png')
+plt.savefig('/Users/aryaman/macro-research/plots/figures/usdx-fed-vs-dxy.png')
+
+# plot normalized
+fig = plt.subplots(figsize=(10, 6))
+usdx_norm['fed USD idx'].plot(color='blue', label='fed USD index (normalized 100 on 2006-01-03)')
+usdx_norm['DXY'].plot(color='black', label='DXY (normalized 100 on 2006-01-03)')
+plt.ylabel('USD index')
+plt.xlabel('date')
+plt.legend()
+plt.title('comparison of USD indices (normalized 100 on 2006-01-03)')
+plt.tight_layout()
+plt.savefig('/Users/aryaman/macro-research/plots/figures/usdx-fed-vs-dxy-normalized.png')
+plt.show()
 
 # compare for validation
 plt.figure(figsize=(6,6))
@@ -66,13 +80,3 @@ plt.ylabel("DXY")
 plt.title("manually-computed DXY vs Yahoo Finance DXY")
 plt.tight_layout()
 plt.savefig('/Users/aryaman/macro-research/plots/figures/dxy-validation.png')
-plt.show()
-
-diff = usdx['DXY'] - usdx['manual DXY']
-mae  = np.mean(np.abs(diff))
-rmse = np.sqrt(np.mean(diff**2))
-mape = np.mean(np.abs(diff / usdx['DXY'])) * 100
-
-print(f"MAE:  {mae:.4f}")
-print(f"RMSE: {rmse:.4f}")
-print(f"MAPE: {mape:.2f}%")
