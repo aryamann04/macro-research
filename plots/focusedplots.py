@@ -22,7 +22,7 @@ for start, end in date_ranges:
     
     for c in pairs:
         print(f"{c} {start}-{end} appreciation: {(spots_trunc[c][-1] - spots_trunc[c][0]) / spots_trunc[c][0] * 100:.2f}%")
-        print(f"{start}-{end} yield appreciation: {(yield_trunc[:-1] - yield_trunc[0]) / yield_trunc[0] * 100:.2f}%\n")
+        print(f"{start}-{end} yield appreciation: {(yield_trunc['10yr_U.S._nominal_rate'][-1] - yield_trunc['10yr_U.S._nominal_rate'][0]) / yield_trunc['10yr_U.S._nominal_rate'] * 100:.2f}%\n")
         continue 
 
         fig, ax1 = plt.subplots(figsize=(10, 5))
