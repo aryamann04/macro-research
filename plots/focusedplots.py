@@ -19,10 +19,11 @@ pairs = ['USD/EUR', 'USD/GBP', 'USD/YEN', 'USD/YUAN']
 for start, end in date_ranges: 
     spots_trunc = spots.truncate(start, end)
     yield_trunc = daily_yield.truncate(start, end)
-    
+    ry = (yield_trunc['10yr_U.S._nominal_rate'].iloc[-1] - yield_trunc['10yr_U.S._nominal_rate'].iloc[0]) / yield_trunc['10yr_U.S._nominal_rate'].iloc[0] * 100
+    print(f"\n{start}-{end} yield appreciation: {ry:.2f}%")
+
     for c in pairs:
-        print(f"{c} {start}-{end} appreciation: {(spots_trunc[c][-1] - spots_trunc[c][0]) / spots_trunc[c][0] * 100:.2f}%")
-        print(f"{start}-{end} yield appreciation: {(yield_trunc['10yr_U.S._nominal_rate'][-1] - yield_trunc['10yr_U.S._nominal_rate'][0]) / yield_trunc['10yr_U.S._nominal_rate'] * 100:.2f}%\n")
+        print(f"{c} {start}-{end} appreciation: {(spots_trunc[c].iloc[-1] - spots_trunc[c].iloc[0]) / spots_trunc[c].iloc[0] * 100:.2f}%")
         continue 
 
         fig, ax1 = plt.subplots(figsize=(10, 5))
