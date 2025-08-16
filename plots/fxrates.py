@@ -1,23 +1,8 @@
-import pandas as pd 
 import matplotlib.pyplot as plt 
-from realrates import realrates 
+from data.loader import get_spots_monthly, get_realrates
 
-# load data
-
-usd_yen = pd.read_csv('/Users/aryaman/macro-research/data/usd-yen.csv', index_col=0, parse_dates=True)
-usd_eur = pd.read_csv('/Users/aryaman/macro-research/data/usd-eur.csv', index_col=0, parse_dates=True)
-usd_gbp = pd.read_csv('/Users/aryaman/macro-research/data/usd-gbp.csv', index_col=0, parse_dates=True)
-usd_yuan = pd.read_csv('/Users/aryaman/macro-research/data/usd-yuan.csv', index_col=0, parse_dates=True)
-
-fxrates = pd.DataFrame()
-fxrates['USD/YEN'] = usd_yen['CCUSMA02JPM618N']
-fxrates['USD/EUR'] = usd_eur['CCUSMA02EZM618N']
-fxrates['USD/GBP'] = usd_gbp['CCUSMA02GBM618N']
-fxrates['USD/YUAN'] = usd_yuan['CCUSMA02CNM618N']
-
-# by convention, eur/usd and gbp/usd are quoted per unit usd 
-fxrates['EUR/USD'] = 1 / fxrates['USD/EUR']
-fxrates['GBP/USD'] = 1 / fxrates['USD/GBP']
+fxrates = get_spots_monthly()
+realrates = get_realrates()
 
 # plots 
 

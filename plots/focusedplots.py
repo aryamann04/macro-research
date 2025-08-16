@@ -1,11 +1,10 @@
 import pandas as pd 
 import matplotlib.pyplot as plt
-import numpy as np
-from datetime import datetime
 
-from fredconnect import fred
-from loader import spots 
+from data.fredconnect import fred
+from data.loader import get_spots 
 
+spots = get_spots()
 spots['USD/EUR'] = 1 / spots['EUR/USD']
 spots['USD/GBP'] = 1 / spots['GBP/USD']
 

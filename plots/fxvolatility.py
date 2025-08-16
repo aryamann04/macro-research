@@ -3,8 +3,9 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import numpy as np
 from scipy.stats import norm, skew, kurtosis, probplot, levene, fligner
-from loader import spots 
+from data.loader import get_spots 
 
+spots = get_spots()
 spots = spots.truncate(before='2007-01-01')
 
 # log returns 

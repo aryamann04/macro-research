@@ -1,25 +1,9 @@
 import pandas as pd
 import matplotlib.pyplot as plt 
 
-from loader import inflation, yields 
+from data.loader import get_realrates
 
-# truncate to start from cutoff date '1991-01-01'
-cutoff_date = '1991-01-01'
-inflation = inflation.truncate(before=cutoff_date)
-yields = yields.truncate(before=cutoff_date)
-
-# join inflation and yields, calculate real rates
-
-inflation_and_yields = inflation.join(yields, how='left').dropna()
-
-realrates = pd.DataFrame()
-realrates['10yr_nominal'] = inflation_and_yields['10yr_yield']
-
-realrates['10yr_real_pce'] = inflation_and_yields['10yr_yield'] - inflation_and_yields['pce']
-realrates['10yr_real_corecpi'] = inflation_and_yields['10yr_yield'] - inflation_and_yields['corecpi']
-realrates['10yr_real_cpi'] = inflation_and_yields['10yr_yield'] - inflation_and_yields['cpi']
-realrates['10yr_real_corepce'] = inflation_and_yields['10yr_yield'] - inflation_and_yields['corepce']
-realrates['10yr_real_cpi_urban'] = inflation_and_yields['10yr_yield'] - inflation_and_yields['cpi_urban']
+realrates = get_realrates()
 
 # real rate plot (all 5 series)
 

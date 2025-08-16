@@ -2,8 +2,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+from data.fredconnect import fred
+from data.loader import get_dxy_spots
+
 # fed nominal broad US dollar index
-from fredconnect import fred
 
 fed_nominal_broad_usd_idx = pd.DataFrame(fred.get_series('DTWEXBGS'))
 fed_nominal_broad_usd_idx.index = pd.to_datetime(fed_nominal_broad_usd_idx.index).tz_localize(None)
@@ -16,7 +18,7 @@ dxy = yf.Ticker("DX-Y.NYB", session=requests.Session(impersonate="chrome")).hist
 dxy.index = pd.to_datetime(dxy.index).tz_localize(None)
 
 # manual DXY calculation 
-from loader import dxy_spots
+dxy_spots = get_dxy_spots()
 
 c = 50.14348112
 

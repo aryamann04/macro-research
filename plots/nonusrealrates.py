@@ -1,11 +1,14 @@
 import matplotlib.pyplot as plt
+from data.loader import get_euro_data, get_uk_data, get_japan_data, get_china_data, get_realrates, get_spots_monthly
 
-from loader import euro_data, uk_data, japan_data, china_data
-from realrates import realrates 
-from fxrates import fxrates
+fxrates = get_spots_monthly()
+euro_data = get_euro_data()
+uk_data = get_uk_data()
+japan_data = get_japan_data()
+china_data = get_china_data()
 
 # normalize index
-realrates = realrates.copy()
+realrates = get_realrates()
 realrates.index = realrates.index.to_period('M')
 
 # euro real rates & spreads 
