@@ -1,5 +1,5 @@
 import pandas as pd 
-from fredconnect import fred 
+from data.fredconnect import fred 
 
 # inflation data
 def get_inflation(): 
