@@ -162,11 +162,11 @@ ax.set_ylabel('volatility (%)')
 ax.set_xlabel('date')
 plt.legend(loc='upper left')
 plt.tight_layout()
-plt.savefig('/Users/aryaman/macro-research/plots/figures/ARCH_vols_daily.png')
+plt.savefig('/Users/aryaman/macro-research/plots/figures/ARCH/ARCH_vols_daily.png')
 
 # plot monthly annualized vol with monthly annualized ARCH vols
 
-fxvol_by_month = rets.resample('M').std().mul(np.sqrt(252))
+fxvol_by_month = rets.resample('M').std(ddof=0).mul(np.sqrt(252))
 arch_vols_by_month = arch_vols.resample('M').mean().mul(np.sqrt(252))
 
 plt.figure(figsize=(10, 5))
@@ -199,5 +199,5 @@ plt.ylabel('annualized volatility (%)')
 plt.xlabel('date')
 plt.legend(loc='upper left')
 plt.tight_layout()
-plt.savefig('/Users/aryaman/macro-research/plots/figures/ARCH_vols_monthly.png')
+plt.savefig('/Users/aryaman/macro-research/plots/figures/ARCH/ARCH_vols_monthly.png')
 plt.show()
