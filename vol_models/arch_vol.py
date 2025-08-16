@@ -1,13 +1,10 @@
 import pandas as pd 
 import numpy as np 
-import matplotlib.pyplot as plt 
 
 from statsmodels.tsa.ar_model import AutoReg
 from statsmodels.stats.diagnostic import acorr_ljungbox, het_arch
 from statsmodels.stats.stattools import jarque_bera
 from arch import arch_model 
-
-from data.loader import get_spots
 
 # x100 for better optimziation stability 
 def log_rets(spots: pd.Series) -> pd.Series:
@@ -119,7 +116,15 @@ def run_arch(rets: pd.DataFrame, alpha: float = 0.05, lb_lags: int = 12, max_ar:
 
     return summary_df, fitted, diagnostics
 
-def get_arch_vols(rets: pd.DataFrame) -> pd.DataFrame:
+def get_arch_vols(rets: pd.DataFrame, force_new: bool = False) -> pd.DataFrame:
+
+    if not force_new:
+        try: 
+            arch_vols = pd.read_csv('/Users/aryaman/macro-research/data/ARCH_vols.csv', index_col=0, parse_dates=True)
+            return arch_vols
+        except FileNotFoundError:
+            pass
+
     _, fitted, _ = run_arch(rets)
     conditional_vols = {}
     for c, result in fitted.items(): 
@@ -130,74 +135,3 @@ def get_arch_vols(rets: pd.DataFrame) -> pd.DataFrame:
     arch_vols.to_csv('/Users/aryaman/macro-research/data/ARCH_vols.csv')
 
     return arch_vols 
-
-# plot modelled ARCH vols
-
-rets = log_rets(get_spots())
-
-try: 
-    arch_vols = pd.read_csv('/Users/aryaman/macro-research/data/ARCH_vols.csv', index_col=0, parse_dates=True)
-except FileNotFoundError:
-    arch_vols = get_arch_vols(rets)
-
-fig, ax = plt.subplots(figsize=(12, 6))
-arch_vols['EUR/USD'].plot(ax=ax, color='blue', alpha=0.7)
-arch_vols['GBP/USD'].plot(ax=ax, color='green', alpha=0.7)
-arch_vols['USD/YEN'].plot(ax=ax, color='red', alpha=0.7)
-arch_vols['USD/YUAN'].plot(ax=ax, color='orange', alpha=0.7)
-
-highlight_ranges = [
-    ('2008-10', '2009-04'),
-    ('2016-04', '2016-10'),
-    ('2020-01', '2020-07'),
-    ('2022-10', '2023-04'),
-    ('2025-01', '2025-07')
-]
-
-for start, end in highlight_ranges:
-    plt.axvspan(pd.to_datetime(start), pd.to_datetime(end), color='gray', alpha=0.2)
-
-ax.set_title('ARCH conditional volatilities')
-ax.set_ylabel('volatility (%)')
-ax.set_xlabel('date')
-plt.legend(loc='upper left')
-plt.tight_layout()
-plt.savefig('/Users/aryaman/macro-research/plots/figures/ARCH/ARCH_vols_daily.png')
-
-# plot monthly annualized vol with monthly annualized ARCH vols
-
-fxvol_by_month = rets.resample('M').std(ddof=0).mul(np.sqrt(252))
-arch_vols_by_month = arch_vols.resample('M').mean().mul(np.sqrt(252))
-
-plt.figure(figsize=(10, 5))
-
-fxvol_by_month['EUR/USD'].plot(label='EUR/USD realized vol', color='blue', linestyle='--', alpha=0.7)
-arch_vols_by_month['EUR/USD'].plot(label='EUR/USD ARCH vol', color='blue', linestyle='-', linewidth=1.5)
-
-fxvol_by_month['GBP/USD'].plot(label='GBP/USD realized vol', color='green', linestyle='--', alpha=0.7)
-arch_vols_by_month['GBP/USD'].plot(label='GBP/USD ARCH vol', color='green', linestyle='-', linewidth=1.5)
-
-fxvol_by_month['USD/YEN'].plot(label='USD/YEN realized vol', color='red', linestyle='--', alpha=0.7)
-arch_vols_by_month['USD/YEN'].plot(label='USD/YEN ARCH vol', color='red', linestyle='-', linewidth=1.5)
-
-fxvol_by_month['USD/YUAN'].plot(label='USD/YUAN realized vol', color='orange', linestyle='--', alpha=0.7)
-arch_vols_by_month['USD/YUAN'].plot(label='USD/YUAN ARCH vol', color='orange', linestyle='-', linewidth=1.5)
-
-highlight_ranges = [
-    ('2008-10', '2009-04'),
-    ('2016-04', '2016-10'),
-    ('2020-01', '2020-07'),
-    ('2022-10', '2023-04'),
-    ('2025-01', '2025-07')
-]
-
-for start, end in highlight_ranges:
-    plt.axvspan(pd.to_datetime(start), pd.to_datetime(end), color='gray', alpha=0.2)
-
-plt.title('monthly annualized realized volatility vs ARCH volatility')
-plt.ylabel('annualized volatility (%)')
-plt.xlabel('date')
-plt.legend(loc='upper left')
-plt.tight_layout()
-plt.savefig('/Users/aryaman/macro-research/plots/figures/ARCH/ARCH_vols_monthly.png')
-plt.show()
