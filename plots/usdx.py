@@ -56,7 +56,7 @@ plt.xlabel('date')
 plt.legend()
 plt.title('comparison of USD indices')
 plt.tight_layout()
-plt.savefig('/Users/aryaman/macro-research/plots/figures/usdx-fed-vs-dxy.png')
+plt.savefig('/Users/aryaman/macro-research/plots/figures/DXY/usdx-fed-vs-dxy.png')
 
 # plot normalized
 fig = plt.subplots(figsize=(10, 6))
@@ -67,7 +67,7 @@ plt.xlabel('date')
 plt.legend()
 plt.title('comparison of USD indices (normalized 100 on 2006-01-03)')
 plt.tight_layout()
-plt.savefig('/Users/aryaman/macro-research/plots/figures/usdx-fed-vs-dxy-normalized.png')
+plt.savefig('/Users/aryaman/macro-research/plots/figures/DXY/usdx-fed-vs-dxy-normalized.png')
 plt.show()
 
 # compare for validation
@@ -81,4 +81,4 @@ plt.xlabel("manual DXY")
 plt.ylabel("DXY")
 plt.title("manually-computed DXY vs Yahoo Finance DXY")
 plt.tight_layout()
-plt.savefig('/Users/aryaman/macro-research/plots/figures/dxy-validation.png')
+plt.savefig('/Users/aryaman/macro-research/plots/figures/DXY/dxy-validation.png')

@@ -16,7 +16,7 @@ daily_yield.dropna(inplace=True)
 date_ranges = [['GFC', '2008-08-01', '2009-05-01'], ['COVID', '2020-01-01', '2020-07-01'], ['April 2025', '2025-03-20', '2025-05-10']]
 pairs = ['USD/EUR', 'USD/GBP', 'USD/YEN', 'USD/YUAN']
 
-for label, start, end in date_ranges: 
+for label, start, end in date_ranges:
     spots_trunc = spots.truncate(start, end)
     yield_trunc = daily_yield.truncate(start, end)
 
@@ -69,7 +69,7 @@ for label, start, end in date_ranges:
         ]
     ).set_index('pair').round(2)
 
-    print(f"{label}\n")
+    print(f"\n{label}\n")
     print(summary)
 
     fig.tight_layout(rect=[0, 0.03, 1, 0.97])
