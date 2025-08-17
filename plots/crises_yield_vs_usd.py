@@ -13,7 +13,7 @@ daily_yield = fred.get_series('DGS10').to_frame(name='10yr_U.S._nominal_rate')
 daily_yield.index = pd.to_datetime(daily_yield.index)
 daily_yield.dropna(inplace=True)
 
-date_ranges = [['GFC', '2008-08-01', '2009-05-01'], ['COVID', '2020-01-01', '2020-07-01'], ['April 2025', '2025-03-20', '2025-05-10']]
+date_ranges = [['GFC', '2008-08-01', '2009-05-01'], ['COVID', '2020-02-01', '2020-07-01'], ['April 2025', '2025-03-20', '2025-05-10']]
 pairs = ['USD/EUR', 'USD/GBP', 'USD/YEN', 'USD/YUAN']
 
 for label, start, end in date_ranges:
@@ -35,18 +35,14 @@ for label, start, end in date_ranges:
         # correlations - level and log returns (with and without lags)
         aligned = pd.concat([spots_trunc[c].rename('spot'), yield_trunc], axis=1).dropna()
         corr_level = aligned['spot'].corr(aligned['10yr_U.S._nominal_rate'])
-
         corr_level_lag1 = aligned['spot'].corr(aligned['10yr_U.S._nominal_rate'].shift(1)) 
-        corr_level_lag5 = aligned['spot'].corr(aligned['10yr_U.S._nominal_rate'].shift(5))  
 
         lr = np.log(aligned).diff().dropna()
         corr_logret = lr['spot'].corr(lr['10yr_U.S._nominal_rate'])
-
         corr_logret_lag1 = lr['spot'].corr(lr['10yr_U.S._nominal_rate'].shift(1))
-        corr_logret_lag5 = lr['spot'].corr(lr['10yr_U.S._nominal_rate'].shift(5))  
 
         summary_rows.append(  
-            (c, rc, ry, corr_level, corr_level_lag1, corr_level_lag5, corr_logret, corr_logret_lag1, corr_logret_lag5)
+            (c, rc, ry, len(aligned), corr_level, corr_level_lag1, corr_logret, corr_logret_lag1)
         )
 
         ax1 = axes[i]
@@ -63,9 +59,9 @@ for label, start, end in date_ranges:
     summary = pd.DataFrame( 
         summary_rows,
         columns=[
-            'pair', 'USD vs pair %', '10y yield %',
-            'corr(level)', 'corr(level, yield -1d)', 'corr(level, yield -5d)',
-            'corr(logret)', 'corr(logret, yield -1d)', 'corr(logret, yield -5d)'
+            'pair', 'USD vs pair %', '10y yield %', 'n',
+            'corr(level)', 'corr(level, yield -1d)',
+            'corr(logret)', 'corr(logret, yield -1d)'
         ]
     ).set_index('pair').round(2)
 

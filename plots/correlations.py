@@ -13,7 +13,7 @@ daily_yield = fred.get_series('DGS10').to_frame(name='10yr_U.S._nominal_rate')
 daily_yield.index = pd.to_datetime(daily_yield.index)
 daily_yield.dropna(inplace=True)
 
-date_ranges = [('2008-08-01', '2009-05-01'), ('2020-01-01', '2020-07-01'), ('2025-03-20', '2025-05-10')]
+date_ranges = [('2008-08-01', '2009-05-01'), ('2020-02-01', '2020-07-01'), ('2025-03-20', '2025-05-10')]
 pairs = ['USD/EUR', 'USD/GBP', 'USD/YEN', 'USD/YUAN']
 windows = [21, 63, 126, 252] # 1m, 3m, 6m, 1y
 
@@ -47,8 +47,9 @@ def plot_rolling_correlations(start=None, end=None, full=False):
         
         for ax in (axes_lvl[i], axes_ret[i]):
             ax.set_ylim(-1.05, 1.05)
-            ax.axhline(0, linestyle='--', linewidth=1, color='black', alpha=0.6, zorder=1.5, label='_nolegend_')
+            ax.axhline(0, linestyle='-', linewidth=1, color='black', alpha=0.6, zorder=1.5, label='_nolegend_')
             ax.tick_params(axis='x', labelsize=7)
+            ax.grid(True, linestyle='-', alpha=0.3, zorder=1)
 
         axes_lvl[i].set_title(f'{c}')
         axes_lvl[i].set_xlabel('date')

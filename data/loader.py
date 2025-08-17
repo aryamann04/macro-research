@@ -220,3 +220,20 @@ def get_dxy_spots():
 
     return dxy_spots
 
+def get_interbank_rates(): 
+    series = ['IRSTCI01USM156N', 'IRSTCI01EZM156N', 'IRSTCI01GBM156N', 'IRSTCI01JPM156N', 'IRSTCI01CNM156N']
+    interbank_data = {sid: fred.get_series(sid) for sid in series}
+    interbank_rates = pd.DataFrame(interbank_data)
+
+    interbank_rates = interbank_rates.rename(columns={
+        'IRSTCI01USM156N': 'US interbank rate',
+        'IRSTCI01EZM156N': 'Euro area interbank rate',
+        'IRSTCI01GBM156N': 'UK interbank rate',
+        'IRSTCI01JPM156N': 'Japan interbank rate', 
+        'IRSTCI01CNM156N': 'China interbank rate'
+    })
+
+    interbank_rates.index = pd.to_datetime(interbank_rates.index)
+    interbank_rates.dropna(inplace=True)
+
+    return interbank_rates
