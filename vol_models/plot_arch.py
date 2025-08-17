@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from vol_models.arch_vol import log_rets, get_arch_vols
 from data.loader import get_spots
 
-rets = log_rets(get_spots())
+rets = log_rets(get_spots()).truncate(before='2006-01-01')
 arch_vols = get_arch_vols(rets)
 
 fig, ax = plt.subplots(figsize=(12, 6))
@@ -15,11 +15,9 @@ arch_vols['USD/YEN'].plot(ax=ax, color='red', alpha=0.7)
 arch_vols['USD/YUAN'].plot(ax=ax, color='orange', alpha=0.7)
 
 highlight_ranges = [
-    ('2008-10', '2009-04'),
-    ('2016-04', '2016-10'),
-    ('2020-01', '2020-07'),
-    ('2022-10', '2023-04'),
-    ('2025-01', '2025-07')
+    ('2008-08-01', '2009-05-01'),
+    ('2020-01-01', '2020-07-01'),
+    ('2025-03-01', '2025-06-01')
 ]
 
 for start, end in highlight_ranges:
@@ -52,11 +50,9 @@ fxvol_by_month['USD/YUAN'].plot(label='USD/YUAN realized vol', color='orange', l
 arch_vols_by_month['USD/YUAN'].plot(label='USD/YUAN ARCH vol', color='orange', linestyle='-', linewidth=1.5)
 
 highlight_ranges = [
-    ('2008-10', '2009-04'),
-    ('2016-04', '2016-10'),
+    ('2008-08', '2009-04'),
     ('2020-01', '2020-07'),
-    ('2022-10', '2023-04'),
-    ('2025-01', '2025-07')
+    ('2025-03', '2025-05')
 ]
 
 for start, end in highlight_ranges:

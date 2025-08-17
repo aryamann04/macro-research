@@ -97,7 +97,8 @@ def plot_arch_diags(fitted: dict, pairs=None, lags=40):
 
 # validate ARCH model fit
 
-_, fitted, _ = run_arch(log_rets(get_spots()))
+rets = log_rets(get_spots()).truncate(before='2006-01-01')
+_, fitted, _ = run_arch(rets)
 diag_table, z_map = validate_arch_fits(fitted, lb_lags=(12, 20), alpha=0.05)
 print(diag_table.filter(regex="LB|JB|skew|kurt|^n$", axis=1))
 plot_arch_diags(fitted, lags=40)
