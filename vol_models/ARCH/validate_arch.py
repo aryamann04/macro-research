@@ -8,9 +8,6 @@ from statsmodels.stats.stattools import jarque_bera
 from statsmodels.graphics.tsaplots import plot_acf
 from statsmodels.graphics.gofplots import qqplot
 
-from vol_models.arch_vol import log_rets, run_arch
-from data.loader import get_spots
-
 def _std_resid_from_result(res):
     if hasattr(res, "std_resid"):  
         idx = res.resid.index
@@ -94,11 +91,3 @@ def plot_arch_diags(fitted: dict, pairs=None, lags=40):
         ax.set_title(r"$z_t$ density (hist and fitted pdf)")
         plt.tight_layout()
         plt.show()
-
-# validate ARCH model fit
-
-rets = log_rets(get_spots()).truncate(before='2006-01-01')
-_, fitted, _ = run_arch(rets)
-diag_table, z_map = validate_arch_fits(fitted, lb_lags=(12, 20), alpha=0.05)
-print(diag_table.filter(regex="LB|JB|skew|kurt|^n$", axis=1))
-plot_arch_diags(fitted, lags=40)

@@ -220,7 +220,7 @@ def get_dxy_spots():
 
     return dxy_spots
 
-def get_interbank_rates(): 
+def get_overnight_interbank_rates(): 
     series = ['IRSTCI01USM156N', 'IRSTCI01EZM156N', 'IRSTCI01GBM156N', 'IRSTCI01JPM156N', 'IRSTCI01CNM156N']
     interbank_data = {sid: fred.get_series(sid) for sid in series}
     interbank_rates = pd.DataFrame(interbank_data)
@@ -231,6 +231,24 @@ def get_interbank_rates():
         'IRSTCI01GBM156N': 'UK interbank rate',
         'IRSTCI01JPM156N': 'Japan interbank rate', 
         'IRSTCI01CNM156N': 'China interbank rate'
+    })
+
+    interbank_rates.index = pd.to_datetime(interbank_rates.index)
+    interbank_rates.dropna(inplace=True)
+
+    return interbank_rates
+
+def get_3m_interbank_rates(): 
+    series = ['IR3TIB01USM156N', 'IR3TIB01EZM156N', 'IR3TIB01GBM156N', 'IR3TIB01JPM156N', 'IR3TIB01CNM156N']
+    interbank_data = {sid: fred.get_series(sid) for sid in series}
+    interbank_rates = pd.DataFrame(interbank_data)
+
+    interbank_rates = interbank_rates.rename(columns={
+        'IR3TIB01USM156N': 'US interbank rate',
+        'IR3TIB01EZM156N': 'Euro area interbank rate',
+        'IR3TIB01GBM156N': 'UK interbank rate',
+        'IR3TIB01JPM156N': 'Japan interbank rate', 
+        'IR3TIB01CNM156N': 'China interbank rate'
     })
 
     interbank_rates.index = pd.to_datetime(interbank_rates.index)

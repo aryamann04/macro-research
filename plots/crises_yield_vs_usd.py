@@ -13,7 +13,7 @@ daily_yield = fred.get_series('DGS10').to_frame(name='10yr_U.S._nominal_rate')
 daily_yield.index = pd.to_datetime(daily_yield.index)
 daily_yield.dropna(inplace=True)
 
-date_ranges = [['GFC', '2008-08-01', '2009-05-01'], ['COVID', '2020-02-01', '2020-07-01'], ['April 2025', '2025-03-20', '2025-05-10']]
+date_ranges = [['GFC', '2008-08-01', '2009-05-01'], ['COVID', '2020-02-01', '2020-07-01'], ['April 2025', '2025-03-31', '2025-05-10']]
 pairs = ['USD/EUR', 'USD/GBP', 'USD/YEN', 'USD/YUAN']
 
 for label, start, end in date_ranges:
