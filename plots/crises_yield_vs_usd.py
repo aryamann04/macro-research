@@ -41,14 +41,29 @@ for label, start, end in date_ranges:
         corr_logret = lr['spot'].corr(lr['10yr_U.S._nominal_rate'])
         corr_logret_lag1 = lr['spot'].corr(lr['10yr_U.S._nominal_rate'].shift(1))
 
-        summary_rows.append(  
-            (c, rc, ry, len(aligned), corr_level, corr_level_lag1, corr_logret, corr_logret_lag1)
-        )
+        summary_rows.append((c, rc, ry, len(aligned), corr_level, corr_level_lag1, corr_logret, corr_logret_lag1))
 
         ax1 = axes[i]
         ax2 = ax1.twinx()   
+
         spots_trunc[c].plot(ax=ax1, color='orange', label=c)
         yield_trunc['10yr_U.S._nominal_rate'].plot(ax=ax2, color='black', linestyle='-', label='10yr U.S. nominal rate')
+
+        if label == "GFC": 
+            ax1.axvline('2008-10-10', color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+            ax1.axvline('2008-11-25', color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+            ax1.axvline('2009-03-05', color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+        elif label == "COVID": 
+            ax1.axvline('2020-02-26', color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+            ax1.axvline('2020-03-09', color='red', linestyle='--', linewidth=0.5, alpha=0.5)
+            ax1.axvline('2020-03-12', color='red', linestyle='--', linewidth=0.5, alpha=0.5)
+            ax1.axvline('2020-03-19', color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+            ax1.axvline('2020-03-23', color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+        elif label == "April 2025":
+            ax1.axvline('2025-04-02', color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+            ax1.axvline('2025-04-05', color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+            ax1.axvline('2025-04-09', color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+        
         ax1.set_xlabel('date')
         ax1.set_ylabel(f'{c}')
         ax2.set_ylabel('10-yr U.S. nominal rate (%)')

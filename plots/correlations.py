@@ -44,6 +44,35 @@ def plot_rolling_correlations(start=None, end=None, full=False):
                 start_ts, end_ts = pd.to_datetime(start_d), pd.to_datetime(end_d)
                 axes_lvl[i].axvspan(start_ts, end_ts, color='gray', alpha=0.2, zorder=0)
                 axes_ret[i].axvspan(start_ts, end_ts, color='gray', alpha=0.2, zorder=0)
+        else: 
+            if pd.to_datetime(start) <= pd.to_datetime('2009-01-01'): 
+                axes_lvl[i].axvline(pd.to_datetime('2008-10-10'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_lvl[i].axvline(pd.to_datetime('2008-11-25'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_lvl[i].axvline(pd.to_datetime('2009-03-05'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+
+                axes_ret[i].axvline(pd.to_datetime('2008-10-10'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_ret[i].axvline(pd.to_datetime('2008-11-25'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_ret[i].axvline(pd.to_datetime('2009-03-05'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+            elif pd.to_datetime(start) <= pd.to_datetime('2020-03-01'):
+                axes_lvl[i].axvline(pd.to_datetime('2020-02-26'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_lvl[i].axvline(pd.to_datetime('2020-03-09'), color='red', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_lvl[i].axvline(pd.to_datetime('2020-03-12'), color='red', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_lvl[i].axvline(pd.to_datetime('2020-03-19'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_lvl[i].axvline(pd.to_datetime('2020-03-23'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+
+                axes_ret[i].axvline(pd.to_datetime('2020-02-26'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_ret[i].axvline(pd.to_datetime('2020-03-09'), color='red', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_ret[i].axvline(pd.to_datetime('2020-03-12'), color='red', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_ret[i].axvline(pd.to_datetime('2020-03-19'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_ret[i].axvline(pd.to_datetime('2020-03-23'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+            elif pd.to_datetime(start) <= pd.to_datetime('2025-04-01'):
+                axes_lvl[i].axvline(pd.to_datetime('2025-04-02'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_lvl[i].axvline(pd.to_datetime('2025-04-05'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_lvl[i].axvline(pd.to_datetime('2025-04-09'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+
+                axes_ret[i].axvline(pd.to_datetime('2025-04-02'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_ret[i].axvline(pd.to_datetime('2025-04-05'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
+                axes_ret[i].axvline(pd.to_datetime('2025-04-09'), color='black', linestyle='--', linewidth=0.5, alpha=0.5)
         
         for ax in (axes_lvl[i], axes_ret[i]):
             ax.set_ylim(-1.05, 1.05)
@@ -60,7 +89,7 @@ def plot_rolling_correlations(start=None, end=None, full=False):
         axes_ret[i].set_xlabel('date')
         axes_ret[i].set_ylabel('correlation')
         axes_ret[i].legend(loc='upper left')
-
+    
     if full: 
         fig_lvl.suptitle('rolling correlations: currency pairs vs 10y U.S. treasury yield (levels)', fontsize=14)
         fig_lvl.tight_layout(rect=[0, 0.03, 1, 0.97])

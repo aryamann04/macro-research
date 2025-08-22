@@ -255,3 +255,17 @@ def get_3m_interbank_rates():
     interbank_rates.dropna(inplace=True)
 
     return interbank_rates
+
+# BIS data for call money 
+def get_BIS_liabilities_data(): 
+    urls = ["https://stats.bis.org/api/v2/data/dataflow/BIS/WS_LBS_D_PUB/1.0/Q.S.L.A.JPY.F.5J.A.5A.A.5J.N?format=csv", 
+            "https://stats.bis.org/api/v2/data/dataflow/BIS/WS_LBS_D_PUB/1.0/Q.S.L.A.EUR.F.5J.A.5A.A.5J.N?format=csv",
+            "https://stats.bis.org/api/v2/data/dataflow/BIS/WS_LBS_D_PUB/1.0/Q.S.L.A.GBP.F.5J.A.5A.A.5J.N?format=csv",
+            ]    
+    df = pd.concat([pd.read_csv(url) for url in urls])
+    df = df[['L_DENOM', 'TIME_PERIOD', 'OBS_VALUE']]
+
+    df = df.set_index(['TIME_PERIOD','L_DENOM'])['OBS_VALUE'].unstack().reset_index()
+    df = df.set_index(pd.PeriodIndex(df['TIME_PERIOD'], freq='Q').to_timestamp(how='end')).sort_index()
+
+    return df
