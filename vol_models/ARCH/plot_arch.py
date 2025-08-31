@@ -119,14 +119,18 @@ def plot_vols_by_pair_rolling(rets, arch_vols, garch_vols, egarch_vols, start=No
 
     for pair in pairs:
         fig, ax = plt.subplots(figsize=(10,5))
+        
         rv21[pair].dropna().plot(ax=ax, linestyle='--', label='Realized (21D)')
         arch21[pair].dropna().plot(ax=ax, label='ARCH (21D)')
         garch21[pair].dropna().plot(ax=ax, label='GARCH (21D)')
         egarch21[pair].dropna().plot(ax=ax, label='EGARCH (21D)')
+
+        ax.axvspan(pd.to_datetime(start) + pd.DateOffset(months=2), pd.to_datetime(end) - pd.DateOffset(months=2), color='gray', alpha=0.2)
         ax.set_title(f'{pair}: 21D rolling realized vs model vols (annualized)')
         ax.set_ylabel('annualized volatility (%)')
         ax.set_xlabel('date')
         ax.legend(loc='upper left')
+
         plt.tight_layout()
         fig.savefig(f'/Users/aryaman/macro-research/plots/figures/GARCH/{start}_{pair.replace("/", "-")}_rolling21_vols.png')
         plt.show()
