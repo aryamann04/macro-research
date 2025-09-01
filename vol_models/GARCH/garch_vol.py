@@ -197,14 +197,11 @@ if __name__ == "__main__":
     rets = log_rets(get_spots()).truncate(before='2006-01-01')
     vols, info = get_garch_egarch_vols(rets, force_new=args.force_new)
 
-    if info is not None:
+    if info is not None and args.validate:
         fitted, summary, diags = info[0], info[1], info[2]
+        print(fitted)
         print(summary)
         for pair in rets.columns: 
             print(f"{pair} GARCH:", diags["GARCH"][pair])
             print(f"{pair} EGARCH:", diags["EGARCH"][pair])
-    else:
-        print("Loaded cached GARCH/EGARCH vols.")
-
-    if args.validate and info is not None:
-        pass
+       

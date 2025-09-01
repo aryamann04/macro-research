@@ -184,7 +184,7 @@ def get_spots_monthly():
 
 
 def get_spots(): 
-    series = ['DEXUSEU', 'DEXUSUK', 'DEXJPUS', 'DEXCHUS']
+    series = ['DEXUSEU', 'DEXUSUK', 'DEXJPUS', 'DEXCHUS', 'DEXSZUS']
     spot_data = {sid: fred.get_series(sid) for sid in series}
     spots = pd.DataFrame(spot_data)
 
@@ -192,7 +192,8 @@ def get_spots():
         'DEXUSEU': 'EUR/USD',
         'DEXUSUK': 'GBP/USD',
         'DEXJPUS': 'USD/YEN',
-        'DEXCHUS': 'USD/YUAN'
+        'DEXCHUS': 'USD/YUAN',
+        'DEXSZUS': 'USD/CHF'
     })
 
     spots.index = pd.to_datetime(spots.index)
@@ -219,6 +220,12 @@ def get_dxy_spots():
     dxy_spots.dropna(inplace=True)
 
     return dxy_spots
+
+def get_vix(): 
+    vix = fred.get_series('VIXCLS').to_frame(name='VIX')
+    vix.index = pd.to_datetime(vix.index)
+    vix.dropna(inplace=True)
+    return vix
 
 def get_overnight_interbank_rates(): 
     series = ['IRSTCI01USM156N', 'IRSTCI01EZM156N', 'IRSTCI01GBM156N', 'IRSTCI01JPM156N', 'IRSTCI01CNM156N']

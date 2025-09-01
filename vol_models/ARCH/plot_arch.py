@@ -47,7 +47,7 @@ def plot_all_vols(model):
 
 # plot_all_vols('ARCH')
 # plot_all_vols('GARCH')
-# plot_all_vols('EGARCH')
+plot_all_vols('EGARCH')
 
 # plot monthly annualized vol with annualized ARCH vols
 
@@ -98,7 +98,7 @@ def plot_realized_and_arch(start=None, end=None, full=True):
 for start, end in highlight_ranges:
     s = pd.Timestamp(start) - pd.DateOffset(months=2)  
     e = pd.Timestamp(end)   + pd.DateOffset(months=2)  
-    plot_realized_and_arch(start=s, end=e, full=False)
+    # plot_realized_and_arch(start=s, end=e, full=False)
 
 def plot_vols_by_pair_rolling(rets, arch_vols, garch_vols, egarch_vols, start=None, end=None, pairs=None):
     rv21 = rets.pow(2).rolling(21).mean().mul(252).pow(0.5)
@@ -119,7 +119,7 @@ def plot_vols_by_pair_rolling(rets, arch_vols, garch_vols, egarch_vols, start=No
 
     for pair in pairs:
         fig, ax = plt.subplots(figsize=(10,5))
-        
+
         rv21[pair].dropna().plot(ax=ax, linestyle='--', label='Realized (21D)')
         arch21[pair].dropna().plot(ax=ax, label='ARCH (21D)')
         garch21[pair].dropna().plot(ax=ax, label='GARCH (21D)')
